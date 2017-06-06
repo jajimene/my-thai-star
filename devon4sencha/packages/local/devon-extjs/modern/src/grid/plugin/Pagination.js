@@ -14,33 +14,34 @@
  * 
  */
 Ext.define('Devon.grid.plugin.Pagination', {
-    extend: 'Ext.plugin.Abstract',
-    alias: 'plugin.pagination',
+    // extend: 'Ext.plugin.Abstract',
+    extend: 'Ext.grid.plugin.PagingToolbar',
+    alias: 'plugin.pagination'
 
-    requires: [
-        'Ext.grid.Grid',
-        'Ext.grid.plugin.PagingToolbar'
-    ],
+    // requires: [
+    //     'Ext.grid.Grid',
+    //     'Ext.grid.plugin.PagingToolbar'
+    // ],
 
-    init: function(grid) {
-        var me = this;
+    // init: function(grid) {
+    //     var me = this;
 
-        // If we do not find a binding store, we throw an error
-        if (!grid || !grid.getInitialConfig() || !grid.getInitialConfig().bind || !grid.getInitialConfig().bind.store) {
-            Devon.Log.error("Not found binding for store");
-            throw ("Not found binding for store");
-        }
+    //     // If we do not find a binding store, we throw an error
+    //     if (!grid || !grid.getInitialConfig() || !grid.getInitialConfig().bind || !grid.getInitialConfig().bind.store) {
+    //         Devon.Log.error("Not found binding for store");
+    //         throw ("Not found binding for store");
+    //     }
 
-        var pagingCfg = {
-            bind: {
-                store: grid.getInitialConfig().bind.store
-            },
-            dock: 'bottom'
-        };
+    //     var pagingCfg = {
+    //         bind: {
+    //             store: grid.getInitialConfig().bind.store
+    //         },
+    //         dock: 'bottom'
+    //     };
 
-        grid.addDocked(Ext.create('Ext.grid.PagingToolbar', pagingCfg));
+    //     grid.addDocked(Ext.create('Ext.grid.PagingToolbar', pagingCfg));
 
-        me.callParent(arguments);
-    }
+    //     me.callParent(arguments);
+    // }
 
 });

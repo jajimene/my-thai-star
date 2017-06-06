@@ -32,9 +32,9 @@ Ext.define('Devon.grid.plugin.Pagination', {
         }
 
         var pagingCfg = {
-            bind: {
-                store: grid.getInitialConfig().bind.store
-            },
+            // bind: {
+            //     store: grid.getInitialConfig().bind.store
+            // },
             dock: 'bottom'
         };
 

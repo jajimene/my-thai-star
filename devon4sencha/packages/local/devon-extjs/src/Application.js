@@ -86,8 +86,7 @@ Ext.define('Devon.Application', {
             return;
         }
 
-        // this.checkExistingSession();
-        this.checkSessionOK();
+        this.checkExistingSession();
 
     },
 
@@ -97,8 +96,9 @@ Ext.define('Devon.Application', {
 
     showMainView: function(){
 		if (Ext.isModern){
-            //To match default Main.js xtype
-			Ext.Viewport.setActiveItem('app-main');
+			//To match default Main.js xtype
+			//Ext.Viewport.setActiveItem('app-main');
+        		Ext.Viewport.setActiveItem('main-view');
 		}else{
 			Devon.app.getApplication().setMainView(Devon.app.getName()+'.view.main.Main');
 		}
