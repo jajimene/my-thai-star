@@ -9,12 +9,14 @@ Ext.define('MyThaiStar.view.main.Main', {
 
     requires: [
         'Ext.MessageBox',
-        'Ext.layout.Fit'
+        'Ext.layout.Fit',
+        'MyThaiStar.view.main.MenuA',
+        'MyThaiStar.view.main.MenuB',
+        'MyThaiStar.view.main.MenuC'
     ],
 
     controller: 'main',
     viewModel: 'main',
-
     defaults: {
         tab: {
             iconAlign: 'top'
@@ -22,6 +24,12 @@ Ext.define('MyThaiStar.view.main.Main', {
     },
 
     //tabBarPosition: 'bottom',
+
+    /*onItemSelected: function(){
+        alert('hola...');
+        //var menu2 = Ext.ComponentQuery.query('menu2');
+        //menu2[0].setHidden(true);
+    },*/
 
     items: [{
         xtype: 'toolbar',
@@ -35,11 +43,38 @@ Ext.define('MyThaiStar.view.main.Main', {
         }, 
         '->',
         {
-            text: '**Home'        
+            text: '**Home',
+            handler: function() {
+                var menuOp = Ext.ComponentQuery.query('menuOptionA')[0];
+                var bookOp = Ext.ComponentQuery.query('menuOptionB')[0];
+                var homeOp = Ext.ComponentQuery.query('menuOptionC')[0];
+                
+                menuOp.setHidden(true);
+                bookOp.setHidden(true);
+                homeOp.setHidden(false);
+            }       
         }, {
-            text: '**Menu'
+            text: '**Menu',
+            handler: function() {
+                var menuOp = Ext.ComponentQuery.query('menuOptionA')[0];
+                var bookOp = Ext.ComponentQuery.query('menuOptionB')[0];
+                var homeOp = Ext.ComponentQuery.query('menuOptionC')[0];
+                
+                menuOp.setHidden(false);
+                bookOp.setHidden(true);
+                homeOp.setHidden(true);
+            }
         }, {
-            text: '**Book table'
+            text: '**Book table',
+            handler: function() {
+                var menuOp = Ext.ComponentQuery.query('menuOptionA')[0];
+                var bookOp = Ext.ComponentQuery.query('menuOptionB')[0];
+                var homeOp = Ext.ComponentQuery.query('menuOptionC')[0];
+
+                bookOp.setHidden(false);
+                menuOp.setHidden(true);
+                homeOp.setHidden(true);
+            }
         }, {
             iconCls: 'x-fa fa-user-circle'
         }, {
@@ -53,27 +88,32 @@ Ext.define('MyThaiStar.view.main.Main', {
             iconCls: 'x-fa fa-home',
             layout: 'fit',
             // The following grid shares a store with the classic version's grid as well!
+            
             items: [{
                 xtype: 'mainlist'
             }]
         },{
             title: 'Users',
             iconCls: 'x-fa fa-user',
-            bind: {
+            /*bind: {
                 html: '{loremIpsum}'
-            }
+            }*/
+            items: [{
+                xtype: 'menuOptionB'
+            }]
         },{
             title: 'Groups',
             iconCls: 'x-fa fa-users',
-            bind: {
-                html: '{loremIpsum}'
-            }
-        },{
+            
+            items: [{
+                xtype: 'menuOptionA'
+            }]
+        }/*,{
             title: 'Settings',
             iconCls: 'x-fa fa-cog',
             bind: {
                 html: '{loremIpsum}'
             }
-        }
+        }*/
     ]
 });
