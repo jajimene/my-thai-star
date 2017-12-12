@@ -1,4 +1,4 @@
-import { DatePipe } from '@angular/common';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -16,15 +16,16 @@ describe('ReservationCockpitComponent', () => {
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ ReservationCockpitComponent ],
-      providers: [  WaiterCockpitService, PriceCalculatorService ],
+      declarations: [ReservationCockpitComponent],
+      providers: [WaiterCockpitService, PriceCalculatorService, HttpClient],
       imports: [
         CoreModule,
-        BackendModule.forRoot({environmentType: 0, restServiceRoot: 'v1'}),
+        BackendModule.forRoot({ environmentType: 0, restServiceRoot: 'v1' }),
         BrowserAnimationsModule,
+        HttpClientModule,
       ],
     })
-    .compileComponents();
+      .compileComponents();
   }));
 
   beforeEach(() => {

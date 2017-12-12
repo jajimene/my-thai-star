@@ -1,12 +1,14 @@
 import { environment } from './../../../environments/environment';
-import { Injectable, Injector } from '@angular/core';
-import { Response, Http } from '@angular/http';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { IBookingDataService } from './booking-data-service-interface';
 import { BookingInfo, FilterCockpit } from '../backendModels/interfaces';
-import { ReservationView } from '../../shared/viewModels/interfaces';
-import { config } from '../../config';
-import { HttpClientService } from '../../core/httpClient/httpClient.service';
+import {
+    BookingResponse,
+    BookingTableResponse,
+    InvitationResponse,
+} from '../../shared/viewModels/interfaces';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable()
 export class BookingRestService implements IBookingDataService {
@@ -17,38 +19,34 @@ export class BookingRestService implements IBookingDataService {
   private readonly cancelReserveRestPath: string = 'bookingmanagement/v1/booking/cancel/';
   private readonly getReservationsRestPath: string = 'bookingmanagement/v1/booking/search';
 
-  private http: HttpClientService;
+  constructor(private http: HttpClient) {}
 
-  constructor(private injector: Injector) {
-    this.http = this.injector.get(HttpClientService);
-  }
-
-  bookTable(booking: BookingInfo): Observable < number > {
+  bookTable(booking: BookingInfo): Observable < BookingTableResponse > {
     return this.http.post(`${environment.restServiceRoot}${this.booktableRestPath}`, booking)
-      .map((res: Response) => res.json());
+      .map((res: BookingTableResponse) => res);
 
   }
 
-  getReservations(filter: FilterCockpit): Observable < ReservationView[] > {
+  getReservations(filter: FilterCockpit): Observable < BookingResponse[] > {
     return this.http.post(`${environment.restServiceRoot}${this.getReservationsRestPath}`, filter)
-      .map((res: Response) => res.json());
+      .map((res: BookingResponse[]) => res);
   }
 
-  acceptInvite(token: string): Observable < number > {
+  acceptInvite(token: string): Observable < InvitationResponse > {
     return this.http.get(`${environment.restServiceRoot}${this.acceptReserveRestPath}` + token)
-      .map((res: Response) => res.json());
+      .map((res: InvitationResponse) => res);
 
   }
 
-  cancelInvite(token: string): Observable < number > {
+  cancelInvite(token: string): Observable < InvitationResponse > {
     return this.http.get(`${environment.restServiceRoot}${this.rejectReserveRestPath}` + token)
-      .map((res: Response) => res.json());
+      .map((res: InvitationResponse) => res);
 
   }
 
-  cancelReserve(token: string): Observable < number > {
+  cancelReserve(token: string): Observable < InvitationResponse > {
     return this.http.get(`${environment.restServiceRoot}${this.cancelReserveRestPath}` + token)
-      .map((res: Response) => res.json());
+      .map((res: InvitationResponse) => res);
 
   }
 

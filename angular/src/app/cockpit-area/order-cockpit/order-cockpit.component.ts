@@ -3,14 +3,12 @@ import { IPageChangeEvent,
          ITdDataTableSelectAllEvent,
          ITdDataTableColumn,
          ITdDataTableSortChangeEvent } from '@covalent/core';
-import { MdDialogRef, MdDialog } from '@angular/material';
+import { MatDialogRef, MatDialog } from '@angular/material';
 import { WaiterCockpitService } from '../shared/waiter-cockpit.service';
 import { OrderDialogComponent } from './order-dialog/order-dialog.component';
 import { OrderListView } from '../../shared/viewModels/interfaces';
 import { FilterCockpit, Pagination } from '../../backend/backendModels/interfaces';
-import { reject } from 'lodash';
 import { config } from '../../config';
-import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'cockpit-order-cockpit',
@@ -25,6 +23,8 @@ export class OrderCockpitComponent implements OnInit {
     total: 1,
   };
   private sorting: any[] = [];
+
+  pageSize: number = 8;
 
   orders: OrderListView[];
   totalOrders: number;
@@ -43,7 +43,7 @@ export class OrderCockpitComponent implements OnInit {
     bookingToken: undefined,
   };
 
-  constructor(private dialog: MdDialog,
+  constructor(private dialog: MatDialog,
               private waiterCockpitService: WaiterCockpitService) {}
 
   ngOnInit(): void {
@@ -79,9 +79,12 @@ export class OrderCockpitComponent implements OnInit {
   }
 
   selected(selection: ITdDataTableSelectAllEvent): void {
-    let dialogRef: MdDialogRef<OrderDialogComponent> = this.dialog.open(OrderDialogComponent, {
+    const dialogRef: MatDialogRef<OrderDialogComponent> = this.dialog.open(OrderDialogComponent, {
       width: '80%',
       data: selection,
+    });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      // TODO: manage user input
     });
   }
 }

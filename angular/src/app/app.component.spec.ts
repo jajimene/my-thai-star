@@ -1,6 +1,7 @@
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 import { RouterTestingModule } from '@angular/router/testing';
+import { HttpClientModule } from '@angular/common/http';
 
 import { BackendModule } from './backend/backend.module';
 import { SidenavModule } from './sidenav/sidenav.module';
@@ -18,7 +19,7 @@ describe('AppComponent', () => {
   let component: AppComponent;
   let fixture: ComponentFixture<AppComponent>;
 
-  beforeEach(async() => {
+  beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [AppComponent, HeaderComponent],
       providers: [WindowService, AuthService, UserAreaService, SnackBarService],
@@ -28,10 +29,11 @@ describe('AppComponent', () => {
         BackendModule.forRoot({environmentType: 0, restServiceRoot: 'v1'}),
         CoreModule,
         SidenavModule,
+        HttpClientModule,
       ],
     });
     TestBed.compileComponents();
-  });
+  }));
 
   beforeEach(() => {
     fixture = TestBed.createComponent(AppComponent);

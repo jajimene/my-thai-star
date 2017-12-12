@@ -2,17 +2,13 @@ import { WaiterCockpitService } from '../shared/waiter-cockpit.service';
 import { FilterCockpit, Pagination, Sorting } from '../../backend/backendModels/interfaces';
 import { ReservationView } from '../../shared/viewModels/interfaces';
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
 import { ITdDataTableSelectAllEvent,
          IPageChangeEvent,
          ITdDataTableColumn,
-         ITdDataTableSortChangeEvent,
-         TdDataTableSortingOrder } from '@covalent/core';
-import { MdDialogRef, MdDialog } from '@angular/material';
+         ITdDataTableSortChangeEvent } from '@covalent/core';
+import { MatDialogRef, MatDialog } from '@angular/material';
 import { ReservationDialogComponent } from './reservation-dialog/reservation-dialog.component';
-import { reject } from 'lodash';
 import { config } from '../../config';
-import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'cockpit-reservation-cockpit',
@@ -21,13 +17,13 @@ import { Observable } from 'rxjs/Observable';
 })
 export class ReservationCockpitComponent implements OnInit {
 
-  private pagination: Pagination = {
+  private sorting: Sorting[] = [];
+
+  pagination: Pagination = {
     size: 8,
     page: 1,
     total: 1,
   };
-
-  private sorting: Sorting[] = [];
 
   reservations: ReservationView;
   totalReservations: number;
@@ -47,7 +43,7 @@ export class ReservationCockpitComponent implements OnInit {
   };
 
   constructor(private waiterCockpitService: WaiterCockpitService,
-              private dialog: MdDialog) {}
+              private dialog: MatDialog) {}
 
   ngOnInit(): void {
     this.applyFilters();
@@ -87,10 +83,12 @@ export class ReservationCockpitComponent implements OnInit {
   }
 
   selected(selection: ITdDataTableSelectAllEvent): void {
-    let dialogRef: MdDialogRef<ReservationDialogComponent> = this.dialog.open(ReservationDialogComponent, {
+    const dialogRef: MatDialogRef<ReservationDialogComponent> = this.dialog.open(ReservationDialogComponent, {
       width: '80%',
       data: selection,
     });
+    dialogRef.afterClosed().subscribe((result: any) => {
+      // TODO: manage user input
+    });
   }
-
 }
