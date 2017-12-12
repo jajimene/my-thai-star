@@ -17,4 +17,21 @@ q = function(str){
         return result[0];
     }
     return result;
-}
+};
+
+version65 = {
+  "version": "6.5.0.775",
+  "pad": 0,
+  "shortVersion": "650775",
+  "releaseValue": 0,
+  "parts": [
+    6,
+    5,
+    0,
+    775
+  ],
+  "major": 6,
+  "minor": 5,
+  "patch": 0,
+  "build": 775
+};

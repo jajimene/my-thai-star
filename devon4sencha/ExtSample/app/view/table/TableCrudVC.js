@@ -47,10 +47,11 @@ Ext.define('Sample.view.table.TableCrudVC', {
 
         var data = this.getViewModel().get('table');
 
-        if (Ext.isModern) {
-            //patch for bug EXTJS-19392 where binding to a selectfield doesn't get the value but the model object
-            data.state = this.getViewModel().get('table').state.get('code');
-        }
+        /* Commented out. Fixed on 6.5 */
+        // if (Ext.isModern) {
+        //     //patch for bug EXTJS-19392 where binding to a selectfield doesn't get the value but the model object
+        //     data.state = this.getViewModel().get('table').state.get('code');
+        // }
 
         if (this.getViewModel().get('isValid')) {
             Devon.rest.tablemanagement.table.post({

@@ -3,6 +3,7 @@ Ext.define('Sample.view.main.MainVC', {
 
     requires: [
     ],
+    
 
     alias: 'controller.main-view',
 

@@ -91,7 +91,7 @@ Ext.define("Sample.view.table.TableList", {
             store: '{tables}',
             selection: '{selectedItem}'
         },
-//        plugins: ['pagination'],
+       plugins: ['pagination'],
 
         listeners: {
             beforeitemdblclick: 'onEditDblclick'

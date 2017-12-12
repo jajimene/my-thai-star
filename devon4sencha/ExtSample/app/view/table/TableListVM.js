@@ -12,7 +12,8 @@ Ext.define('Sample.view.table.TableListVM', {
     stores: {
         tables: {
             model: 'Sample.model.table.Table',
-            pageSize: Ext.isModern? 100 : 3,
+            // pageSize: Ext.isModern? 100 : 3,
+            pageSize: 3,
             proxy: {
                 type: 'tablemanagement.search',
                 extraParams:'{stateFilter}'

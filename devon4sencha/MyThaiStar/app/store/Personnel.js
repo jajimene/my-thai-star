@@ -12,6 +12,8 @@ Ext.define('MyThaiStar.store.Personnel', {
         { name: 'Data',     email: "mr.data@enterprise.com",        phone: "555-444-4444" }
     ]},
 
+    pageSize: 2,
+
     proxy: {
         type: 'memory',
         reader: {

@@ -8,14 +8,16 @@ Ext.define('Sample.view.main.Main', {
 	controller : 'main-view',
 
     alias: 'widget.main-view',
-	defaultBackButtonText: '<',
+	// defaultBackButtonText: '<',
+	defaultBackButtonText: '',
+	useTitleForBackButtonText: false,
 	padding: '0',
 	navigationBar : {
 		items: [
 			{
-				ui:'plain',
+				// ui:'plain',
 				xtype:'button',
-				iconCls: 'fa-bars',
+				iconCls: 'md-icon-menu',
 				iconAlign: 'left',
 				scale: 'small',
 				handler: 'showMainMenu',

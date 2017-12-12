@@ -20,6 +20,8 @@ Ext.define('Sample.Application', {
         'Sample.controller.cook.CookController'
     ],
 
+    defaultToken : 'home',
+
     launch: function() {
         Devon.Log.trace('Sample.app launch');
         console.log('Sample.app launch');

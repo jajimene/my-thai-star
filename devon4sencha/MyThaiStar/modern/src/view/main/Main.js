@@ -4,7 +4,7 @@
  * added to the Viewport container.
  */
 Ext.define('MyThaiStar.view.main.Main', {
-    extend: 'Ext.Panel',
+    extend: 'Ext.tab.Panel',
     xtype: 'app-main',
 
     requires: [

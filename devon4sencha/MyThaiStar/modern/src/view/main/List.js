@@ -15,6 +15,10 @@ Ext.define('MyThaiStar.view.main.List', {
         type: 'personnel'
     },
 
+    plugins: [{
+        type: 'pagingtoolbar'
+    }],
+
     columns: [{ 
         text: 'Name',
         dataIndex: 'name',
