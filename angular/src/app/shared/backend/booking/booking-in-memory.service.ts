@@ -1,45 +1,72 @@
-import { OrderList } from './orderList';
-import { Injectable, Injector } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
 import { IBookingDataService } from './booking-data-service-interface';
-import { BookingInfo } from './bookingInfo';
+import { ReservationView } from '../../viewModels/interfaces';
+import { BookingInfo, FilterCockpit } from '../backendModels/interfaces';
 import { bookedTables } from '../mock-data';
-import { maxBy, find, filter } from 'lodash';
+import * as moment from 'moment';
+import { assign, maxBy, filter, toString, orderBy } from 'lodash';
 
 @Injectable()
 export class BookingInMemoryService implements IBookingDataService {
 
-    getBookingId(): Observable<number> {
-        return Observable.of(maxBy(bookedTables, (table: BookingInfo) => table.bookingId).bookingId + 1);
-    }
-
     bookTable(booking: BookingInfo): Observable<number> {
-        return Observable.of(bookedTables.push(booking));
-    }
-
-    getOrders(): Observable<BookingInfo[]> {
-        return Observable.of(bookedTables);
-    }
-
-    getOrder(id: number): Observable<BookingInfo> {
-        return Observable.of(find(bookedTables, (booking: BookingInfo) => booking.bookingId === id));
-    }
-
-    getReservations(): Observable<BookingInfo[]> {
-        return Observable.of(filter(bookedTables, (booking: BookingInfo) => booking.friends.length > 0));
-    }
-
-    getReservation(id: number): Observable<BookingInfo> {
-        return Observable.of(find(bookedTables, (booking: BookingInfo) => booking.bookingId === id));
-    }
-
-    saveOrders(orderList: OrderList): Observable<BookingInfo> {
-        const tableBooked: BookingInfo = find(bookedTables, (booking: BookingInfo) => booking.bookingId === orderList.bookingId);
-        if (!tableBooked) {
-            return Observable.throw(undefined);
+        let bookTable: ReservationView;
+        bookTable = assign(bookTable, booking);
+        bookTable.booking.creationDate = moment().format('LLL');
+        bookTable.booking.bookingToken = maxBy(bookedTables, (table: ReservationView) => table.booking.bookingToken).booking.bookingToken + 1;
+        bookTable.booking.tableId = maxBy(bookedTables, (table: ReservationView) => table.booking.tableId).booking.tableId + 1;
+        if (!bookTable.invitedGuests) {
+            bookTable.invitedGuests = [];
         }
-        tableBooked.orders = tableBooked.orders.concat(orderList.orders);
-        return Observable.of(tableBooked);
+        return Observable.of(bookedTables.push(bookTable));
     }
+
+    getReservations(filters: FilterCockpit): Observable<any> {
+        if (!filters.sort[0]) {
+            filters.sort = [{ name: '', direction: '' }];
+        } else {
+            filters.sort = [{ name: filters.sort[0].name, direction: filters.sort[0].direction }];
+        }
+        return Observable.of({
+            pagination: {
+                size: filters.pagination.size,
+                page: filters.pagination.page,
+                total: bookedTables.length,
+            },
+            result: orderBy(bookedTables, [filters.sort[0].name], [filters.sort[0].direction])
+                    .filter((booking: ReservationView) => {
+                        if (filters.bookingDate) {
+                            return booking.booking.bookingDate.toLowerCase().includes(filters.bookingDate.toLowerCase());
+                        } else {
+                            return true;
+                        }
+                    }).filter((booking: ReservationView) => {
+                        if (filters.email) {
+                            return booking.booking.email.toLowerCase().includes(filters.email.toLowerCase());
+                        } else {
+                            return true;
+                        }
+                    }).filter((booking: ReservationView) => {
+                        if (filters.bookingToken) {
+                            return toString(booking.booking.bookingToken).includes(toString(filters.bookingToken));
+                        } else {
+                            return true;
+                        }
+                    }),
+        });
+    }
+
+    acceptInvite(token: string): Observable<number> {
+        return Observable.of(1);
+     }
+
+    cancelInvite(token: string): Observable<number> {
+        return Observable.of(1);
+     }
+
+    cancelReserve(token: string): Observable<number> {
+        return Observable.of(1);
+     }
 
 }

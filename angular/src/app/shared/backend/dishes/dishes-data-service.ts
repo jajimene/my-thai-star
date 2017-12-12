@@ -1,14 +1,13 @@
-import {DishesGraphQlService} from './dishes-graph-ql.service';
+import { Injector, Injectable } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
-import { Dish } from './dish';
-import { Filter } from './filter';
-
-import { BackendConfig, BackendType } from '../backend.module';
+import { BackendType } from './../../../../app/config';
+import { BackendConfig } from '../backend.module';
+import { DishesGraphQlService } from './dishes-graph-ql.service';
 import { DishesInMemoryService } from './dishes-in-memory.service';
 import { DishesRestService } from './dishes-rest.service';
-import { OnInit, Injector, Injectable } from '@angular/core';
-import { Http } from '@angular/http';
+import { Filter } from '../backendModels/interfaces';
 import { IDishesDataService } from './dishes-data-service-interface';
+import { DishView } from '../../viewModels/interfaces';
 
 @Injectable()
 export class DishesDataService implements IDishesDataService {
@@ -26,11 +25,7 @@ export class DishesDataService implements IDishesDataService {
         }
     }
 
-    get(): Observable<Dish[]> {
-        return this.usedImplementation.get();
-    }
-
-    filter(filters: Filter): Observable<Dish[]> {
+    filter(filters: Filter): Observable<DishView[]> {
         return this.usedImplementation.filter(filters);
     }
 

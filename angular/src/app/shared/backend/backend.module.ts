@@ -1,21 +1,24 @@
+import { BackendType } from './../../../app/config';
 import { NgModule, ModuleWithProviders, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpModule } from '@angular/http';
 import { DishesDataService } from './dishes/dishes-data-service';
 import { LoginDataService } from './login/login-data-service';
 import { BookingDataService } from './booking/booking-data-service';
+import { OrderDataService } from './order/order-data-service';
 import { provideClient } from './graphql-client';
 import { ApolloModule } from 'apollo-angular';
+import { HttpClient } from '../httpClient/httpClient.service';
 
-export enum BackendType {
-  IN_MEMORY,
-  REST,
-  GRAPHQL,
-}
+// export enum BackendType {
+//   IN_MEMORY,
+//   REST,
+//   GRAPHQL,
+// }
 
 export class BackendConfig {
-  restServiceRoot: string;
   environmentType: BackendType;
+  restServiceRoot: string;
 }
 
 @NgModule({
@@ -26,9 +29,11 @@ export class BackendConfig {
   ],
   declarations: [],
   providers: [
+    HttpClient,
     DishesDataService,
     LoginDataService,
     BookingDataService,
+    OrderDataService,
   ],
 })
 

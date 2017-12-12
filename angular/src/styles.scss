@@ -2,10 +2,6 @@
     text-align: center;
 }
 
-.property-text-right {
-    text-align: right;
-}
-
 .justify-space-around {
     justify-content: space-around;
 }
@@ -16,4 +12,8 @@
 
 .flex-wrap {
     flex-wrap: wrap;
+}
+
+.align-right {
+    text-align: right;
 }

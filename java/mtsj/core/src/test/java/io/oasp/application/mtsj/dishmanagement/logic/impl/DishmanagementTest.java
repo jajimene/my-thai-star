@@ -6,13 +6,13 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Test;
-import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.web.WebAppConfiguration;
 
 import io.oasp.application.mtsj.SpringBootApp;
-import io.oasp.application.mtsj.dishmanagement.dataaccess.api.Category;
 import io.oasp.application.mtsj.dishmanagement.logic.api.Dishmanagement;
-import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishEto;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.CategoryEto;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishCto;
 import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishSearchCriteriaTo;
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 import io.oasp.module.test.common.base.ComponentTest;
@@ -21,41 +21,41 @@ import io.oasp.module.test.common.base.ComponentTest;
  * Tests for {@link Dishmanagement} component.
  *
  */
-@SpringApplicationConfiguration(classes = SpringBootApp.class)
+@SpringBootTest(classes = SpringBootApp.class)
 @WebAppConfiguration
 public class DishmanagementTest extends ComponentTest {
 
   @Inject
-  private Dishmanagement platemanagement;
+  private Dishmanagement dishmanagement;
 
   /**
-   * This test gets all the available platees using an empty SearchCriteria object
+   * This test gets all the available dishes using an empty SearchCriteria object
    */
   @Test
-  public void findAllPlates() {
+  public void findAllDishes() {
 
     DishSearchCriteriaTo criteria = new DishSearchCriteriaTo();
-    List<Category> categories = new ArrayList<>();
+    List<CategoryEto> categories = new ArrayList<>();
     criteria.setCategories(categories);
-    PaginatedListTo<DishEto> result = this.platemanagement.findDishEtos(criteria);
+    PaginatedListTo<DishCto> result = this.dishmanagement.findDishCtos(criteria);
     assertThat(result).isNotNull();
   }
 
   /**
-   * This test filters all the available platees that match the SearchCriteria object
+   * This test filters all the available dishes that match the SearchCriteria object
    */
   @Test
-  public void filterPlates() {
+  public void filterDishes() {
 
     DishSearchCriteriaTo criteria = new DishSearchCriteriaTo();
-    List<Category> categories = new ArrayList<>();
+    List<CategoryEto> categories = new ArrayList<>();
     criteria.setCategories(categories);
     criteria.setSearchBy("Garlic Paradise");
-    PaginatedListTo<DishEto> result = this.platemanagement.findDishEtos(criteria);
+    PaginatedListTo<DishCto> result = this.dishmanagement.findDishCtos(criteria);
 
     assertThat(result).isNotNull();
     assertThat(result.getResult().size()).isGreaterThan(0);
-    assertThat(result.getResult().get(0).getId()).isEqualTo(1L);
+    assertThat(result.getResult().get(0).getDish().getId()).isEqualTo(1L);
   }
 
 }

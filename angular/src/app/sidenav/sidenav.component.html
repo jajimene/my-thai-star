@@ -14,7 +14,7 @@
         <button md-button color="accent" (click)="navigateTo('menu')">View Menu</button>
       </div>
       <div class="pull-top" [class.scrollOrders]="orders.length > 3">
-        <public-sidenav-order *ngFor="let order of orders" [order]="order" (removeOrder)="reloadOrders()"></public-sidenav-order>
+        <public-sidenav-order *ngFor="let order of orders" [order]="order"></public-sidenav-order>
       </div>
     </div>
     <div *ngIf="orders.length > 0" layout="row" class="justify-space-between pad-sm">
@@ -30,7 +30,7 @@
         </div>
       </md-card>
       <md-input-container class="push-left" color="accent" flex>
-        <input mdInput #bookingId type="number" placeholder="Booking ID">
+        <input mdInput #bookingId placeholder="Booking ID">
       </md-input-container>
       <md-checkbox #terms class="push-left">Accept terms</md-checkbox>
     </div>

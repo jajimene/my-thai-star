@@ -1,11 +1,11 @@
 import { SidenavService } from '../shared/sidenav.service';
 import { PriceCalculatorService } from '../shared/price-calculator.service';
-import { MdDialog, MdDialogRef, MdSnackBar } from '@angular/material';
+import { MdDialog, MdDialogRef } from '@angular/material';
 import { CommentDialogComponent } from '../comment-dialog/comment-dialog.component';
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { TdDialogService } from '@covalent/core';
-import { ExtraView, OrderView } from '../../shared/models/interfaces';
-import { filter } from 'lodash';
+import { ExtraView, OrderView } from '../../shared/viewModels/interfaces';
+import { map } from 'lodash';
 
 @Component({
   selector: 'public-sidenav-order',
@@ -15,28 +15,26 @@ import { filter } from 'lodash';
 export class SidenavOrderComponent implements OnInit {
 
   @Input('order') order: OrderView;
-  @Output('removeOrder') removeEmitter: EventEmitter<any> = new EventEmitter();
-  extras: string[] = [];
+  extras: string;
 
   constructor(private sidenav: SidenavService,
-              public snackBar: MdSnackBar,
               public dialog: MdDialog,
               private _dialogService: TdDialogService,
               private calculator: PriceCalculatorService,
   ) {}
 
   ngOnInit(): void {
-    this.extras = filter(this.order.extras, (extra: ExtraView) => extra.selected);
-  }
+    this.extras = map(this.order.extras, 'name').join(', ');
+ }
 
   removeComment(): void {
-    this.order.comment = undefined;
+    this.order.orderLine.comment = undefined;
   }
 
   addComment(): void {
     let dialogRef: MdDialogRef<CommentDialogComponent> = this.dialog.open(CommentDialogComponent);
     dialogRef.afterClosed().subscribe((result: string) => {
-      this.order.comment = result;
+      this.order.orderLine.comment = result;
     });
   }
 
@@ -46,14 +44,10 @@ export class SidenavOrderComponent implements OnInit {
 
   decreaseOrder(): void {
     this.sidenav.decreaseOrder(this.order);
-    if (this.order.amount < 1) {
-      this.removeEmitter.emit();
-    }
   }
 
   removeOrder(): void {
     this.sidenav.removeOrder(this.order);
-    this.removeEmitter.emit();
   }
 
   calculateOrderPrice(): number {
@@ -62,7 +56,7 @@ export class SidenavOrderComponent implements OnInit {
 
   openCommentDialog(): void {
     this._dialogService.openAlert({
-      message: this.order.comment,
+      message: this.order.orderLine.comment,
       title: 'Comment',
       closeButton: 'Close',
     });

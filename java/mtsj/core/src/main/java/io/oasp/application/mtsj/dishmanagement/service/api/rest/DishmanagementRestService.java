@@ -9,9 +9,16 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
+
 import io.oasp.application.mtsj.dishmanagement.logic.api.Dishmanagement;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.CategoryEto;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.CategorySearchCriteriaTo;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishCto;
 import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishEto;
 import io.oasp.application.mtsj.dishmanagement.logic.api.to.DishSearchCriteriaTo;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.IngredientEto;
+import io.oasp.application.mtsj.dishmanagement.logic.api.to.IngredientSearchCriteriaTo;
 import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 
 /**
@@ -23,6 +30,45 @@ import io.oasp.module.jpa.common.api.to.PaginatedListTo;
 public interface DishmanagementRestService {
 
   /**
+   * Delegates to {@link Dishmanagement#findCategory}.
+   *
+   * @param id the ID of the {@link CategoryEto}
+   * @return the {@link CategoryEto}
+   */
+  @GET
+  @Path("/category/{id}/")
+  public CategoryEto getCategory(@PathParam("id") long id);
+
+  /**
+   * Delegates to {@link Dishmanagement#saveCategory}.
+   *
+   * @param category the {@link CategoryEto} to be saved
+   * @return the recently created {@link CategoryEto}
+   */
+  @POST
+  @Path("/category/")
+  public CategoryEto saveCategory(CategoryEto category);
+
+  /**
+   * Delegates to {@link Dishmanagement#deleteCategory}.
+   *
+   * @param id ID of the {@link CategoryEto} to be deleted
+   */
+  @DELETE
+  @Path("/category/{id}/")
+  public void deleteCategory(@PathParam("id") long id);
+
+  /**
+   * Delegates to {@link Dishmanagement#findCategoryEtos}.
+   *
+   * @param searchCriteriaTo the pagination and search criteria to be used for finding categorys.
+   * @return the {@link PaginatedListTo list} of matching {@link CategoryEto}s.
+   */
+  @Path("/category/search")
+  @POST
+  public PaginatedListTo<CategoryEto> findCategorysByPost(CategorySearchCriteriaTo searchCriteriaTo);
+
+  /**
    * Delegates to {@link Dishmanagement#findDish}.
    *
    * @param id the ID of the {@link DishEto}
@@ -30,7 +76,7 @@ public interface DishmanagementRestService {
    */
   @GET
   @Path("/dish/{id}/")
-  public DishEto getDish(@PathParam("id") long id);
+  public DishCto getDish(@PathParam("id") long id);
 
   /**
    * Delegates to {@link Dishmanagement#saveDish}.
@@ -59,6 +105,46 @@ public interface DishmanagementRestService {
    */
   @Path("/dish/search")
   @POST
-  public PaginatedListTo<DishEto> findDishsByPost(DishSearchCriteriaTo searchCriteriaTo);
+  @CrossOrigin
+  public PaginatedListTo<DishCto> findDishsByPost(DishSearchCriteriaTo searchCriteriaTo);
+
+  /**
+   * Delegates to {@link Dishmanagement#findIngredient}.
+   *
+   * @param id the ID of the {@link IngredientEto}
+   * @return the {@link IngredientEto}
+   */
+  @GET
+  @Path("/ingredient/{id}/")
+  public IngredientEto getIngredient(@PathParam("id") long id);
+
+  /**
+   * Delegates to {@link Dishmanagement#saveIngredient}.
+   *
+   * @param ingredient the {@link IngredientEto} to be saved
+   * @return the recently created {@link IngredientEto}
+   */
+  @POST
+  @Path("/ingredient/")
+  public IngredientEto saveIngredient(IngredientEto ingredient);
+
+  /**
+   * Delegates to {@link Dishmanagement#deleteIngredient}.
+   *
+   * @param id ID of the {@link IngredientEto} to be deleted
+   */
+  @DELETE
+  @Path("/ingredient/{id}/")
+  public void deleteIngredient(@PathParam("id") long id);
+
+  /**
+   * Delegates to {@link Dishmanagement#findIngredientEtos}.
+   *
+   * @param searchCriteriaTo the pagination and search criteria to be used for finding ingredients.
+   * @return the {@link PaginatedListTo list} of matching {@link IngredientEto}s.
+   */
+  @Path("/ingredient/search")
+  @POST
+  public PaginatedListTo<IngredientEto> findIngredientsByPost(IngredientSearchCriteriaTo searchCriteriaTo);
 
 }

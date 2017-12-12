@@ -1,15 +1,18 @@
-import { ReservationCockpitService } from './shared/reservation-cockpit.service';
-import { ReservationView } from '../../shared/models/interfaces';
+import { WaiterCockpitService } from '../shared/waiter-cockpit.service';
+import { FilterCockpit, Pagination, Sorting } from '../../shared/backend/backendModels/interfaces';
+import { ReservationView } from '../../shared/viewModels/interfaces';
 import { Component, OnInit } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { TdDataTableService,
-         ITdDataTableSelectAllEvent,
-         TdDataTableSortingOrder,
+import { ITdDataTableSelectAllEvent,
          IPageChangeEvent,
+         ITdDataTableColumn,
          ITdDataTableSortChangeEvent,
-         ITdDataTableColumn } from '@covalent/core';
+         TdDataTableSortingOrder} from '@covalent/core';
 import { MdDialogRef, MdDialog } from '@angular/material';
 import { ReservationDialogComponent } from './reservation-dialog/reservation-dialog.component';
+import { reject } from 'lodash';
+import { config } from '../../config';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'cockpit-reservation-cockpit',
@@ -18,64 +21,69 @@ import { ReservationDialogComponent } from './reservation-dialog/reservation-dia
 })
 export class ReservationCockpitComponent implements OnInit {
 
-  data: ReservationView[];
+  reservations: ReservationView;
+  totalReservations: number;
 
   columns: ITdDataTableColumn[] = [
-    { name: 'date', label: 'Reservation date'},
-    { name: 'hour', label: 'Reservation time'},
-    { name: 'emailOwner', label: 'Email' },
-    { name: 'bookingId', label: 'Reference number'},
+    { name: 'booking.bookingDate', label: 'Reservation date'},
+    { name: 'booking.email', label: 'Email' },
+    { name: 'booking.bookingToken', label: 'Reference number'},
   ];
 
-  filteredData: ReservationView[];
-  filteredTotal: number;
+  pageSizes: number[] = config.pageSizes;
 
-  fromRow: number = 1;
-  currentPage: number = 1;
-  pageSize: number = 8;
-  sortBy: string = 'date';
-  sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
+  filters: FilterCockpit = {
+    bookingDate: undefined,
+    email: undefined,
+    bookingToken: undefined,
+  };
 
-  constructor(private reservationCockpitService: ReservationCockpitService,
-              private _dataTableService: TdDataTableService,
+  pagination: Pagination = {
+    size: 8,
+    page: 1,
+    total: 1,
+  };
+
+  sorting: Sorting[] = [];
+
+  constructor(private waiterCockpitService: WaiterCockpitService,
               private dialog: MdDialog) {}
 
   ngOnInit(): void {
-    this.reservationCockpitService.getReservations().subscribe((reservations: ReservationView[]) => {
-      this.data = reservations;
-      this.filteredData = reservations;
-      this.filteredTotal = reservations.length;
-    });
-    this.filter();
-  }
-
-  applyFilters(filters: FormGroup): void {
-    // apply the filters
-  }
-
-  clearFilters(): void {
-    // clear the filters
-  }
-
-  sort(sortEvent: ITdDataTableSortChangeEvent): void {
-    this.sortBy = sortEvent.name;
-    this.sortOrder = sortEvent.order;
-    this.filter();
-  }
-
-  page(pagingEvent: IPageChangeEvent): void {
-    this.fromRow = pagingEvent.fromRow;
-    this.currentPage = pagingEvent.page;
-    this.pageSize = pagingEvent.pageSize;
-    this.filter();
+    this.applyFilters();
   }
 
   filter(): void {
-    let newData: any[] = this.data;
-    this.filteredTotal = newData.length;
-    newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
-    newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
-    this.filteredData = newData;
+    this.pagination.page = 1;
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    this.waiterCockpitService.getReservations(this.pagination, this.sorting, this.filters)
+        .subscribe( (data: any) => {
+          this.reservations = data.result;
+          this.totalReservations = data.pagination.total;
+        });
+  }
+
+  clearFilters(filters: any): void {
+    filters.reset();
+    this.applyFilters();
+  }
+
+  page(pagingEvent: IPageChangeEvent): void {
+    this.pagination = {
+      size: pagingEvent.pageSize,
+      page: pagingEvent.page,
+      total: 1,
+    };
+    this.applyFilters();
+  }
+
+  sort(sortEvent: ITdDataTableSortChangeEvent): void {
+    this.sorting = reject(this.sorting, { 'name': sortEvent.name.split('.').pop() });
+    this.sorting.push({'name': sortEvent.name.split('.').pop(), 'direction': '' + sortEvent.order});
+    this.applyFilters();
   }
 
   selected(selection: ITdDataTableSelectAllEvent): void {

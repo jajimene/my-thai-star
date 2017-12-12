@@ -1,10 +1,10 @@
-import { Filter } from './filter';
+import { Filter } from '../backendModels/interfaces';
 import { ApolloQueryResult } from 'apollo-client';
 import { IDishesDataService } from './dishes-data-service-interface';
 import { Injectable, Injector } from '@angular/core';
 import { Observable } from 'rxjs/Observable';
+import { DishView } from '../../viewModels/interfaces';
 
-import { Dish } from './dish';
 import { Apollo } from 'apollo-angular';
 import gql from 'graphql-tag';
 
@@ -31,22 +31,15 @@ const getDishesQuery: any = gql`
 // and java server implementation, model was not yet established so for now conversion
 // will be implemented as a part of this service to expose consistient service API
 class GqlDish {
+    id: number; // added by Roberto, please revise
     image: string;
     likes: number;
-    ingredients: {name: string, price: number}[];
+    ingredients: {id: number, name: string, price: number}[];
     description: string;
     name: string;
     price: number;
-    categories: { // added by Roberto, please, revise
-      main: boolean,
-      starter: boolean,
-      dessert: boolean,
-      noodle: boolean,
-      rice: boolean,
-      curry: boolean,
-      vegan: boolean,
-      vegetarian: boolean,
-    };
+    categories: [ // added by Roberto, please revise
+      {id: string}];
 }
 
 class DishesQueryRepsonse {
@@ -62,39 +55,27 @@ export class DishesGraphQlService implements IDishesDataService {
     this.apollo = injector.get(Apollo);
   }
 
-  get(): Observable <Dish[]> {
-    return this.apollo.watchQuery<DishesQueryRepsonse>({ query: getDishesQuery })
-      .map((result: ApolloQueryResult<DishesQueryRepsonse>) => result.data.dishes)
-      .map((dishes: GqlDish[]) => dishes.map(this.convertToBackendDish));
-  }
-
   // added by Roberto, please, revise
-  filter(filters: Filter): Observable <Dish[]> {
+  filter(filters: Filter): Observable <DishView[]> {
     return this.apollo.watchQuery<DishesQueryRepsonse>({ query: getDishesQuery })
       .map((result: ApolloQueryResult<DishesQueryRepsonse>) => result.data.dishes)
       .map((dishes: GqlDish[]) => dishes.map(this.convertToBackendDish));
   }
 
   // TODO: see the comment above
-  private convertToBackendDish(dish: GqlDish): Dish {
+  private convertToBackendDish(dish: GqlDish): DishView {
    return {
+        dish: {
+          id: dish.id, // added by Roberto, please revise
+          description: dish.description,
+          name: dish.name,
+          price: dish.price,
+        },
         isfav: false,
-        image: dish.image,
+        image: {content: dish.image},
         likes: dish.likes,
-        extras: dish.ingredients.map((extra: any) => ({name: extra.name, price: extra.price, selected: false})),
-        description: dish.description,
-        name: dish.name,
-        price: dish.price,
-        categories: { // added by Roberto, please, revise
-          main: dish.categories.main,
-          starter: dish.categories.main,
-          dessert: dish.categories.main,
-          noodle: dish.categories.main,
-          rice: dish.categories.main,
-          curry: dish.categories.main,
-          vegan: dish.categories.main,
-          vegetarian: dish.categories.main,
-      },
+        extras: dish.ingredients.map((extra: any) => ({id: extra.id, name: extra.name, price: extra.price, selected: false})),
+        categories: dish.categories, // added by Roberto, please revise
       };
   }
 }

@@ -5,30 +5,22 @@ import {
   RouterStateSnapshot,
 }                           from '@angular/router';
 import { AuthService }      from './auth.service';
-import { MdSnackBar } from '@angular/material';
+import { SnackBarService } from '../snackService/snackService.service';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(public snackBar: MdSnackBar,
+  constructor(public snackBar: SnackBarService,
               private authService: AuthService,
               private router: Router) {}
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
-    if (this.authService.isLogged && this.authService.hasPermission) {
+
+    if (this.authService.isLogged() && this.authService.isPermited('WAITER')) {
       return true;
     }
 
-    // Open login snack bar
-    if (!this.authService.isLogged) {
-      this.snackBar.open('Access denied, please try again', 'OK', {
-        duration: 4000,
-        extraClasses: ['bgc-red-600'],
-      });
-    } else {
-      this.snackBar.open('Login successful', 'OK', {
-        duration: 4000,
-        extraClasses: ['bgc-green-600'],
-      });
+    if (!this.authService.isLogged()) {
+      this.snackBar.openSnack('Access denied, please log in first', 4000, 'red');
     }
 
     if (this.router.url === '/') {

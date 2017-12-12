@@ -50,9 +50,37 @@ CREATE TABLE Booking (
   canceled BOOLEAN NOT NULL DEFAULT ((0)) ,
   bookingType INTEGER,
   idTable BIGINT,
+  idOrder BIGINT,
+  assistants INTEGER,
   CONSTRAINT PK_Booking PRIMARY KEY(id),
   CONSTRAINT FK_Booking_idUser FOREIGN KEY(idUser) REFERENCES User(id) NOCHECK,
   CONSTRAINT FK_Booking_idTable FOREIGN KEY(idTable) REFERENCES Table(id) NOCHECK
+);
+
+-- *** InvitedGuest ***
+CREATE TABLE InvitedGuest (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  modificationCounter INTEGER NOT NULL,
+  idBooking BIGINT NOT NULL,
+  guestToken VARCHAR (60),
+  email VARCHAR (60),
+  accepted BOOLEAN,
+  modificationDate TIMESTAMP,
+  idOrder BIGINT,
+  CONSTRAINT PK_InvitedGuest PRIMARY KEY(id),
+  CONSTRAINT FK_InvitedGuest_idBooking FOREIGN KEY(idBooking) REFERENCES Booking(id) NOCHECK
+);
+
+-- *** OrderDish ***
+CREATE TABLE Orders (
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  modificationCounter INTEGER NOT NULL,
+  idBooking BIGINT NOT NULL,
+  idInvitedGuest BIGINT,
+  idHost BIGINT,
+  CONSTRAINT PK_Order PRIMARY KEY(id),
+  CONSTRAINT FK_Order_idBooking FOREIGN KEY(idBooking) REFERENCES Booking(id) NOCHECK,
+  CONSTRAINT FK_Order_idInvitedGuest FOREIGN KEY(idInvitedGuest) REFERENCES InvitedGuest(id) NOCHECK
 );
 
 -- *** Category ***
@@ -71,8 +99,8 @@ CREATE TABLE Image (
   modificationCounter INTEGER NOT NULL,
   name VARCHAR(255),
   content VARCHAR(2147483647),
-  imageType INTEGER,
-  extension VARCHAR(5),
+  contentType INTEGER,
+  mimeType VARCHAR(255),
   CONSTRAINT PK_Image PRIMARY KEY(id)
 );
 
@@ -120,37 +148,12 @@ CREATE TABLE DishIngredient (
   CONSTRAINT FK_DishIngredient_idIngredient FOREIGN KEY(idIngredient) REFERENCES Ingredient(id) NOCHECK
 );
 
--- *** InvitedGuest ***
-CREATE TABLE InvitedGuest (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  modificationCounter INTEGER NOT NULL,
-  idBooking BIGINT NOT NULL,
-  guestToken VARCHAR (60),
-  email VARCHAR (60),
-  accepted BOOLEAN,
-  modificationDate TIMESTAMP,
-  CONSTRAINT PK_InvitedGuest PRIMARY KEY(id),
-  CONSTRAINT FK_InvitedGuest_idBooking FOREIGN KEY(idBooking) REFERENCES Booking(id) NOCHECK
-);
-
--- *** OrderDish ***
-CREATE TABLE Orders (
-  id BIGINT NOT NULL AUTO_INCREMENT,
-  modificationCounter INTEGER NOT NULL,
-  idBooking BIGINT NOT NULL,
-  idInvitedGuest BIGINT,
-  canceled BOOLEAN,
-  CONSTRAINT PK_Order PRIMARY KEY(id),
-  CONSTRAINT FK_Order_idBooking FOREIGN KEY(idBooking) REFERENCES Booking(id) NOCHECK,
-  CONSTRAINT FK_Order_idInvitedGuest FOREIGN KEY(idInvitedGuest) REFERENCES InvitedGuest(id) NOCHECK
-);
-
 -- *** OrderLine ***
 CREATE TABLE OrderLine (
   id BIGINT NOT NULL AUTO_INCREMENT,
   modificationCounter INTEGER NOT NULL,
   idDish BIGINT NOT NULL,
-  quantity INTEGER,
+  amount INTEGER,
   comment VARCHAR (255),
   idOrder BIGINT NOT NULL,
   CONSTRAINT PK_OrderLine PRIMARY KEY(id),
@@ -161,7 +164,7 @@ CREATE TABLE OrderLine (
 -- *** OrderDishExtraIngredient ***
 CREATE TABLE OrderDishExtraIngredient (
   id BIGINT NOT NULL AUTO_INCREMENT,
-  modificationCounter INTEGER NOT NULL,
+  modificationCounter INTEGER,
   idOrderLine BIGINT NOT NULL,
   idIngredient BIGINT NOT NULL,
   CONSTRAINT PK_OrderDishExtraIngredient PRIMARY KEY(id),

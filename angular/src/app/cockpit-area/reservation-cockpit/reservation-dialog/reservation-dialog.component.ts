@@ -1,9 +1,9 @@
-import { FriendsInvite } from '../../../shared/backend/booking/bookingInfo';
-import { ReservationView } from '../../../shared/models/interfaces';
 import { Component, OnInit, Inject } from '@angular/core';
 import { IPageChangeEvent, ITdDataTableColumn, TdDataTableService } from '@covalent/core';
-import { ReservationCockpitService } from '../shared/reservation-cockpit.service';
-import {MD_DIALOG_DATA} from '@angular/material';
+import { FriendsInvite, ReservationView } from '../../../shared/viewModels/interfaces';
+import { WaiterCockpitService } from '../../shared/waiter-cockpit.service';
+import { MD_DIALOG_DATA } from '@angular/material';
+import { config } from '../../../config';
 
 @Component({
   selector: 'cockpit-reservation-dialog',
@@ -15,23 +15,21 @@ export class ReservationDialogComponent implements OnInit {
   data: any;
 
   datat: ReservationView[] = [];
-
   columnst: ITdDataTableColumn[] = [
-    { name: 'date', label: 'Reservation date'},
-    { name: 'hour', label: 'Reservation hour'},
-    { name: 'creationDate', label: 'Creation date'},
-    { name: 'creationHour', label: 'Creation time'},
-    { name: 'nameOwner', label: 'Owner' },
-    { name: 'emailOwner', label: 'Email' },
-    { name: 'bookingId', label: 'Table'},
+    { name: 'booking.bookingDate', label: 'Reservation date'},
+    { name: 'booking.creationDate', label: 'Creation date'},
+    { name: 'booking.name', label: 'Owner' },
+    { name: 'booking.email', label: 'Email' },
+    { name: 'booking.tableId', label: 'Table'},
   ];
 
   datao: FriendsInvite[] = [];
-
   columnso: ITdDataTableColumn[] = [
     { name: 'email', label: 'Guest email'},
-    { name: 'acceptance', label: 'Acceptances and declines'},
+    { name: 'accepted', label: 'Acceptances and declines'},
   ];
+
+  pageSizes: number[] = config.pageSizesDialog;
 
   fromRow: number = 1;
   currentPage: number = 1;
@@ -39,16 +37,17 @@ export class ReservationDialogComponent implements OnInit {
   filteredData: any[] = this.datao;
 
   constructor(private _dataTableService: TdDataTableService,
-              private reservationCockpitService: ReservationCockpitService,
+              private waiterCockpitService: WaiterCockpitService,
               @Inject(MD_DIALOG_DATA) dialogData: any) {
                  this.data = dialogData.row;
   }
 
   ngOnInit(): void {
-    this.reservationCockpitService.getReservation(this.data.bookingId).subscribe( (reservation: ReservationView) => {
-      this.datat.push(reservation);
-      this.datao = reservation.friends;
-    });
+    this.datat.push(this.data);
+    this.datao = this.data.invitedGuests;
+    if (this.data.booking.assistants) {
+      this.columnst.push({ name: 'booking.assistants', label: 'Assistants'});
+    }
     this.filter();
   }
 

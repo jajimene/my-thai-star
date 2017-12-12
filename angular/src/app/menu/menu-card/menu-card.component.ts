@@ -1,6 +1,8 @@
 import { Component, Input } from '@angular/core';
+import { DishView, ExtraView, OrderView } from '../../shared/viewModels/interfaces';
 import { SidenavService } from '../../sidenav/shared/sidenav.service';
-import { DishView, ExtraView, OrderView } from '../../shared/models/interfaces';
+import { MenuService } from '../shared/menu.service';
+import { AuthService } from '../../shared/authentication/auth.service';
 
 @Component({
   selector: 'public-menu-card',
@@ -11,23 +13,14 @@ export class MenuCardComponent {
 
   @Input('menu') menuInfo: DishView;
 
-  constructor(private sidenav: SidenavService) {
-  }
-
-  openSidenav(): void {
-    this.sidenav.openSideNav();
-  }
+  constructor(private menuService: MenuService,
+              public auth: AuthService,
+              private sidenav: SidenavService) { }
 
   addOrderMenu(): void {
-    let order: OrderView = {
-      name: this.menuInfo.name,
-      price: this.menuInfo.price,
-      extras: this.menuInfo.extras,
-      amount: 1,
-      comment: '',
-    };
-    this.sidenav.addOrder(order);
-    this.openSidenav();
+    this.sidenav.addOrder(this.menuService.menuToOrder(this.menuInfo));
+    this.sidenav.openSideNav();
+    this.menuService.clearSelectedExtras(this.menuInfo);
   }
 
   changeFavouriteState(): void {
@@ -35,7 +28,7 @@ export class MenuCardComponent {
   }
 
   selectedOption(extra: ExtraView): void {
-    extra.selected ? extra.selected = false : extra.selected = true;
+    extra.selected = !extra.selected;
   }
 
 }

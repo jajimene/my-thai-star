@@ -1,10 +1,9 @@
 import { Component, OnInit, Inject } from '@angular/core';
 import { IPageChangeEvent, ITdDataTableColumn, TdDataTableService } from '@covalent/core';
-import { ExtraView, OrderView, ReservationView } from '../../../shared/models/interfaces';
-import { OrderCockpitService } from '../shared/order-cockpit.service';
-import { PriceCalculatorService } from '../../../sidenav/shared/price-calculator.service';
-import {MD_DIALOG_DATA} from '@angular/material';
-import {map, reduce} from 'lodash';
+import { ExtraView, OrderView, BookingView, ReservationView, OrderListView } from '../../../shared/viewModels/interfaces';
+import { WaiterCockpitService } from '../../shared/waiter-cockpit.service';
+import { MD_DIALOG_DATA } from '@angular/material';
+import { config } from '../../../config';
 
 @Component({
   selector: 'cockpit-order-dialog',
@@ -13,27 +12,27 @@ import {map, reduce} from 'lodash';
 })
 export class OrderDialogComponent implements OnInit {
 
+  data: any;
+
+  datat: BookingView[] = [];
   columnst: ITdDataTableColumn[] = [
-    { name: 'date', label: 'Reservation date'},
-    { name: 'hour', label: 'Reservation hour'},
+    { name: 'bookingDate', label: 'Reservation date'},
     { name: 'creationDate', label: 'Creation date'},
-    { name: 'creationHour', label: 'Creation time'},
-    { name: 'nameOwner', label: 'Owner' },
-    { name: 'emailOwner', label: 'Email' },
-    { name: 'bookingId', label: 'Table'},
+    { name: 'name', label: 'Owner' },
+    { name: 'email', label: 'Email' },
+    { name: 'tableId', label: 'Table'},
   ];
 
-  columnso: ITdDataTableColumn[] = [
-    { name: 'name', label: 'Dish'},
-    { name: 'comment', label: 'Comments'},
-    { name: 'extras', label: 'Extra' },
-    { name: 'amount', label: 'Quantity' },
-    { name: 'price', label: 'Price'},
-  ];
-
-  bookingId: number;
   datao: OrderView[] = [];
-  datat: ReservationView[] = [];
+  columnso: ITdDataTableColumn[] = [
+    { name: 'dish.name', label: 'Dish'},
+    { name: 'orderLine.comment', label: 'Comments'},
+    { name: 'extras', label: 'Extra' },
+    { name: 'orderLine.amount', label: 'Quantity' },
+    { name: 'dish.price', label: 'Price', numeric: true, format: (v: number) => v.toFixed(2)},
+  ];
+
+  pageSizes: number[] = config.pageSizesDialog;
 
   fromRow: number = 1;
   currentPage: number = 1;
@@ -42,30 +41,17 @@ export class OrderDialogComponent implements OnInit {
   totalPrice: number;
 
   constructor(private _dataTableService: TdDataTableService,
-              private priceCalculator: PriceCalculatorService,
-              private orderCockpitService: OrderCockpitService,
+              private waiterCockpitService: WaiterCockpitService,
               @Inject(MD_DIALOG_DATA) dialogData: any) {
-                 this.bookingId = dialogData.row.bookingId;
+                this.data = dialogData.row;
   }
 
   ngOnInit(): void {
-    this.orderCockpitService.getOrder(this.bookingId).subscribe( (order: ReservationView) => {
-      this.datat.push(order);
-      this.totalPrice = this.priceCalculator.getTotalPrice(order.orders);
-      this.datao = JSON.parse(JSON.stringify(order.orders));
-      map(this.datao, (o: OrderView) => {
-        o.price = this.priceCalculator.getPrice(o);
-        o.extras = reduce(o.extras, (result: string, opt: ExtraView) => {
-          if (opt.selected) {
-            return result + ' ' + opt.name + ',';
-          } else {
-            return result;
-          }
-        }, '').slice(0, -1);
-      });
-    });
+    this.totalPrice = this.waiterCockpitService.getTotalPrice(this.data.orderLines);
+    this.datao = this.waiterCockpitService.orderComposer(this.data.orderLines);
+    this.datat.push(this.data.booking);
     this.filter();
-  }
+}
 
   page(pagingEvent: IPageChangeEvent): void {
     this.fromRow = pagingEvent.fromRow;

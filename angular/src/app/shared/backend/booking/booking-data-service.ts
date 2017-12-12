@@ -1,13 +1,12 @@
-import { OrderList } from './orderList';
+import { BackendType } from './../../../../app/config';
 import { Observable } from 'rxjs/Observable';
-
-import { BackendConfig, BackendType } from '../backend.module';
+import { Injector, Injectable } from '@angular/core';
+import { BackendConfig } from '../backend.module';
 import { BookingInMemoryService } from './booking-in-memory.service';
 import { BookingRestService } from './booking-rest.service';
-import { OnInit, Injector, Injectable } from '@angular/core';
-import { Http } from '@angular/http';
 import { IBookingDataService } from './booking-data-service-interface';
-import { BookingInfo } from './bookingInfo';
+import { ReservationView } from '../../viewModels/interfaces';
+import { BookingInfo, FilterCockpit } from '../backendModels/interfaces';
 
 @Injectable()
 export class BookingDataService implements IBookingDataService {
@@ -23,32 +22,23 @@ export class BookingDataService implements IBookingDataService {
         }
     }
 
-    getBookingId(): Observable<number> {
-        return this.usedImplementation.getBookingId();
-    }
-
     bookTable(booking: BookingInfo): Observable<number> {
         return this.usedImplementation.bookTable(booking);
     }
 
-    getOrders(): Observable<BookingInfo[]> {
-        return this.usedImplementation.getOrders();
+    getReservations(filter: FilterCockpit): Observable<ReservationView[]> {
+        return this.usedImplementation.getReservations(filter);
     }
 
-    getOrder(id: number): Observable<BookingInfo> {
-        return this.usedImplementation.getOrder(id);
-    }
+    acceptInvite(token: string): Observable<number> {
+         return this.usedImplementation.acceptInvite(token);
+     }
 
-    getReservations(): Observable<BookingInfo[]> {
-        return this.usedImplementation.getReservations();
-    }
+    cancelInvite(token: string): Observable<number> {
+         return this.usedImplementation.cancelInvite(token);
+     }
 
-    getReservation(id: number): Observable<BookingInfo> {
-        return this.usedImplementation.getReservation(id);
-    }
-
-    saveOrders(orders: OrderList): Observable<BookingInfo> {
-        return this.usedImplementation.saveOrders(orders);
-    }
-
+    cancelReserve(token: string): Observable<number> {
+         return this.usedImplementation.cancelReserve(token);
+     }
 }

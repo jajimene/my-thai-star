@@ -25,13 +25,19 @@ public class BookingEto extends AbstractEto implements Booking {
 
   private Timestamp creationDate;
 
-  private boolean canceled;
+  private String email;
+
+  private Boolean canceled;
 
   private BookingType bookingType;
 
   private Long tableId;
 
-  private String email;
+  private Long orderId;
+
+  private Integer assistants;
+
+  private Long userId;
 
   @Override
   public String getName() {
@@ -106,13 +112,25 @@ public class BookingEto extends AbstractEto implements Booking {
   }
 
   @Override
-  public boolean isCanceled() {
+  public String getEmail() {
+
+    return this.email;
+  }
+
+  @Override
+  public void setEmail(String email) {
+
+    this.email = email;
+  }
+
+  @Override
+  public Boolean getCanceled() {
 
     return this.canceled;
   }
 
   @Override
-  public void setCanceled(boolean canceled) {
+  public void setCanceled(Boolean canceled) {
 
     this.canceled = canceled;
   }
@@ -152,11 +170,12 @@ public class BookingEto extends AbstractEto implements Booking {
     result = prime * result + ((this.bookingDate == null) ? 0 : this.bookingDate.hashCode());
     result = prime * result + ((this.expirationDate == null) ? 0 : this.expirationDate.hashCode());
     result = prime * result + ((this.creationDate == null) ? 0 : this.creationDate.hashCode());
-    result = prime * result + ((Boolean) this.canceled).hashCode();
-
+    result = prime * result + ((this.email == null) ? 0 : this.email.hashCode());
+    result = prime * result + ((this.canceled == null) ? 0 : this.canceled.hashCode());
     result = prime * result + ((this.bookingType == null) ? 0 : this.bookingType.hashCode());
 
     result = prime * result + ((this.tableId == null) ? 0 : this.tableId.hashCode());
+
     return result;
   }
 
@@ -216,10 +235,20 @@ public class BookingEto extends AbstractEto implements Booking {
     } else if (!this.creationDate.equals(other.creationDate)) {
       return false;
     }
-    if (this.canceled != other.canceled) {
+    if (this.email == null) {
+      if (other.email != null) {
+        return false;
+      }
+    } else if (!this.email.equals(other.email)) {
       return false;
     }
-
+    if (this.canceled == null) {
+      if (other.canceled != null) {
+        return false;
+      }
+    } else if (!this.canceled.equals(other.canceled)) {
+      return false;
+    }
     if (this.bookingType == null) {
       if (other.bookingType != null) {
         return false;
@@ -235,19 +264,44 @@ public class BookingEto extends AbstractEto implements Booking {
     } else if (!this.tableId.equals(other.tableId)) {
       return false;
     }
+
     return true;
   }
 
   @Override
-  public String getEmail() {
+  public Long getOrderId() {
 
-    return this.email;
+    return orderId;
   }
 
   @Override
-  public void setEmail(String email) {
+  public void setOrderId(Long orderId) {
 
-    this.email = email;
+    this.orderId = orderId;
+  }
+
+  @Override
+  public Integer getAssistants() {
+
+    return assistants;
+  }
+
+  @Override
+  public void setAssistants(Integer assistants) {
+
+    this.assistants = assistants;
+  }
+
+  @Override
+  public Long getUserId() {
+
+    return userId;
+  }
+
+  @Override
+  public void setUserId(Long userId) {
+
+    this.userId = userId;
   }
 
 }

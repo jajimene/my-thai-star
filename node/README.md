@@ -4,13 +4,11 @@
 
 The first command required for the installation is:
 
-~~$ npm install~~
+    $ npm install
 
 or 
 
     $ yarn
-
-Use yarn instead npm in order to get the correct package version. With some new version of typescript and aws-sdk it will not work. It will be solved asap.
 
 Although, for the environment to work properly, some packages have to be installed globally, so you have to execute these commands next:
 
@@ -32,42 +30,22 @@ or
 
     $ yarn global add nodemon
 
-Finally, we need to clone serverless-data-collector into our project:
-Clone serverless-data-collector into project:
+## Config
 
-    $ mkdir src/data-collector
-    $ cd src/data-collector
-    $ git clone https://github.com/devonfw/serverless-data-collector.git .
+Before build and execute the server, you must modify server configs. To do this you must edit the file src/config.ts.
 
-## Database
+* secret: configure the secret word for jwt tokens.
+* mailConfig:  configure how the emails will be sent.
+    * api: usign the Jose's email program
+    * mock: printing the email at console
+    * both: api + mock
+    * none: do nothing
+* emailAPIaddr: route to email server
+* frontendURL: route to frontend server
+* serverURL: route to this server
+* databaseURL: route to database server
 
-First of all, download DynamoDB in order to work with it in local: [http://docs.aws.amazon.com/...](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html)
-
-### Running DynamoDB Local:
-
-    $ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar
-
-### Create tables:
-
-Delete all tables:
-
-    $ npm run database-delete
-
-Create all tables:
-
-    $ npm run database-create
-
-Insert all data:
-
-    $ npm run database-seeds
-
-To delete+create+insert data:
-
-    $ npm run database
-
-## Execution
-
-### Build
+## Build
 
 To compile all typescript sources you should run:
 
@@ -77,9 +55,31 @@ or
 
     $ yarn build
 
+## Database
+
+First of all, download DynamoDB in order to work with it in local: [http://docs.aws.amazon.com/...](http://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBLocal.html)
+
+### Running DynamoDB Local:
+
+Move to the folder where you unzip the DynamoDB and run the command:
+
+    $ java -Djava.library.path=./DynamoDBLocal_lib -jar DynamoDBLocal.jar
+
+### Create tables:
+
+Go back to the project folder and run the command:
+
+    $ npm run database
+
+or
+
+    $ yarn database
+
+## Execution
+
 ### Start
 
-To switch on the server and send some http petitions on your localhost (http://localhost:8080), run the command:
+To switch on the server run the command:
 
     $ npm run start
 
@@ -87,7 +87,15 @@ or
 
     $ yarn start
 
-### Testing
+## Testing
+
+Before execute any test, you must create a new database for this purpose:
+
+    $ npm run database:test
+
+or
+
+    $ yarn database:test
 
 In order to run all unit test, run the command:
 
@@ -97,13 +105,11 @@ or
 
     $ yarn test
 
-It uses a new dynamodb connection and migrate & seed all tables. Then it starts a server at port 9080 and then it run all unit test.
-
-### Debugging
+## Debugging
 
 Not implemented yet.
 
-### Nodemon
+## Nodemon
 
 Build and monitors the server, with the nodemon command instead of node:
 
@@ -111,4 +117,4 @@ Build and monitors the server, with the nodemon command instead of node:
 
 or
 
-    $ yarn run serve
+    $ yarn serve

@@ -1,15 +1,16 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { TdDataTableService,
-         TdDataTableSortingOrder,
+import { IPageChangeEvent,
          ITdDataTableSelectAllEvent,
-         ITdDataTableSortChangeEvent,
-         IPageChangeEvent,
-         ITdDataTableColumn } from '@covalent/core';
+         ITdDataTableColumn,
+         ITdDataTableSortChangeEvent} from '@covalent/core';
 import { MdDialogRef, MdDialog } from '@angular/material';
-import { OrderDialogComponent } from 'app/cockpit-area/order-cockpit/order-dialog/order-dialog.component';
-import { OrderCockpitService } from './shared/order-cockpit.service';
-import { ReservationView } from '../../shared/models/interfaces';
+import { WaiterCockpitService } from '../shared/waiter-cockpit.service';
+import { OrderDialogComponent } from './order-dialog/order-dialog.component';
+import { OrderListView } from '../../shared/viewModels/interfaces';
+import { FilterCockpit, Pagination } from '../../shared/backend/backendModels/interfaces';
+import { reject } from 'lodash';
+import { config } from '../../config';
+import { Observable } from 'rxjs/Observable';
 
 @Component({
   selector: 'cockpit-order-cockpit',
@@ -18,64 +19,64 @@ import { ReservationView } from '../../shared/models/interfaces';
 })
 export class OrderCockpitComponent implements OnInit {
 
-  data: ReservationView[];
+  orders: OrderListView[];
+  totalOrders: number;
 
   columns: ITdDataTableColumn[] = [
-    { name: 'date', label: 'Reservation date'},
-    { name: 'hour', label: 'Reservation time'},
-    { name: 'emailOwner', label: 'Email' },
-    { name: 'bookingId', label: 'Reference number'},
+    { name: 'booking.bookingDate', label: 'Reservation date'},
+    { name: 'booking.email', label: 'Email' },
+    { name: 'booking.bookingToken', label: 'Reference number'},
   ];
 
-  filteredData: ReservationView[];
-  filteredTotal: number;
+  pageSizes: number[] = config.pageSizes;
 
-  fromRow: number = 1;
-  currentPage: number = 1;
-  pageSize: number = 8;
-  sortBy: string = 'date';
-  sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Descending;
+  pagination: Pagination = {
+    size: 8,
+    page: 1,
+    total: 1,
+  };
 
-  constructor(private _dataTableService: TdDataTableService,
-              private dialog: MdDialog,
-              private orderCockpitService: OrderCockpitService) {}
+  filters: FilterCockpit = {
+    bookingDate: undefined,
+    email: undefined,
+    bookingToken: undefined,
+  };
+
+  sorting: any[] = [];
+
+  constructor(private dialog: MdDialog,
+              private waiterCockpitService: WaiterCockpitService) {}
 
   ngOnInit(): void {
-    this.orderCockpitService.getOrders().subscribe((orders: ReservationView[]) => {
-      this.data = orders;
-      this.filteredData = orders;
-      this.filteredTotal = orders.length;
-    });
-    this.filter();
+    this.applyFilters();
   }
 
-  applyFilters(filters: FormGroup): void {
-    // apply the filters
+  applyFilters(): void {
+    this.waiterCockpitService.getOrders(this.pagination, this.sorting, this.filters)
+        .subscribe( (data: any) => {
+          this.orders = data.result;
+          this.totalOrders = data.pagination.total;
+        });
   }
 
-  clearFilters(): void {
-    // clear the filters
-  }
-
-  sort(sortEvent: ITdDataTableSortChangeEvent): void {
-    this.sortBy = sortEvent.name;
-    this.sortOrder = sortEvent.order;
-    this.filter();
+  clearFilters(filters: any): void {
+    filters.reset();
+    this.applyFilters();
   }
 
   page(pagingEvent: IPageChangeEvent): void {
-    this.fromRow = pagingEvent.fromRow;
-    this.currentPage = pagingEvent.page;
-    this.pageSize = pagingEvent.pageSize;
-    this.filter();
+    this.pagination = {
+      size: pagingEvent.pageSize,
+      page: pagingEvent.page,
+      total: 1,
+    };
+    this.applyFilters();
   }
 
-  filter(): void {
-    let newData: any[] = this.data;
-    this.filteredTotal = newData.length;
-    newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
-    newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
-    this.filteredData = newData;
+  sort(sortEvent: ITdDataTableSortChangeEvent): void {
+    this.sorting = reject(this.sorting, { 'name': sortEvent.name.split('.').pop() });
+    this.sorting.push({'name': sortEvent.name.split('.').pop(), 'direction': '' + sortEvent.order});
+    this.applyFilters();
   }
 
   selected(selection: ITdDataTableSelectAllEvent): void {

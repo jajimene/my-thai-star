@@ -10,7 +10,7 @@
 
           <div flex-gt-xs="50" class= "menu-image forDesktop">
           </div>
-
+          
           <img md-card-image src='../../assets/images/slider-1.jpg' class="forMobile">
 
           <div flex-gt-xs="50">
@@ -21,28 +21,36 @@
               </div>
               <div layout= "column" flex>
 
-                <md2-datepicker ngModel name="dateTime" openOnFocus="true" type="datetime" container="dialog" required placeholder="Date and time"></md2-datepicker>
+                <md2-datepicker 
+                  ngModel
+                  name="bookingDate"
+                  openOnFocus="true"
+                  type="datetime"
+                  container="dialog"
+                  required
+                  [min]="minDate"
+                  placeholder="Date and time">
+                </md2-datepicker>
 
                 <md-input-container color="accent" flex>
-                  <input mdInput placeholder="Name" ngModel name="nameOwner" required>
+                  <input mdInput placeholder="Name" ngModel name="name" required>
+                  <md-error>Required. Please insert a name to reserve the table</md-error>
                 </md-input-container>
 
                 <md-input-container color="accent" flex>
-                  <input mdInput placeholder="Email" ngModel name="emailOwner" required>
+                  <input mdInput placeholder="Email" ngModel name="email" required validateEmail>
+                  <md-error>Required. Insert yor email to send reservation data. e.g. email@email.com.</md-error>
                 </md-input-container>
 
-                <md-input-container color="accent" flex>
-                  <input mdInput placeholder="Adults" ngModel name="adults" type="number" required>
+                <md-input-container class="push-bottom-sm" color="accent" flex>
+                  <input mdInput placeholder="Assistants" ngModel name="assistants" type="number" required validateAssistants>
+                  <md-error>Required. You can not reserve more assistants than the size of the biggest table (8), if you need more tables, make more bookings.</md-error>
                 </md-input-container>
 
-                <md-input-container color="accent" flex>
-                  <input mdInput placeholder="Kids" ngModel name="kids" type="number" required>
-                </md-input-container>
-
-                <md-checkbox #termsd>Accept terms</md-checkbox>
+                <md-checkbox class="push-top" #termsd>Accept terms</md-checkbox>
 
               </div>
-              <div style="text-align: right">
+              <div class="align-right">
                 <button md-button (click)="showBookTableDialog(bookForm.form)" [disabled]="!(bookForm.form.valid && termsd.checked)" color="accent" class="text-upper">Book table</button>
               </div>
             </form>
@@ -64,23 +72,42 @@
                 <div layout="column" class="push-bottom" flex>
                   <span class="title-card property-text-bold">ADD YOUR INFORMATION AND FRIENDS</span>
                 </div>
+
                 <div layout= "column" flex>
-                  <md2-datepicker ngModel name="dateTime" openOnFocus="true" type="datetime" container="dialog" required placeholder="Date and time"></md2-datepicker>
+                  <md2-datepicker 
+                    ngModel
+                    name="bookingDate"
+                    openOnFocus="true"
+                    type="datetime"
+                    container="dialog"
+                    required
+                    [min]="minDate"
+                    placeholder="Date and time">
+                  </md2-datepicker>
 
                   <md-input-container color="accent" flex>
-                    <input mdInput placeholder="Name" ngModel name="nameOwner" required>
+                    <input mdInput placeholder="Name" ngModel name="name" required>
+                    <md-error>Required. Please insert a name to reserve the table</md-error>
                   </md-input-container>
 
                   <md-input-container color="accent" flex>
-                    <input mdInput placeholder="Email" ngModel name="emailOwner" required>
+                    <input mdInput placeholder="Email" ngModel name="email" required validateEmail>
+                    <md-error>Required. Insert yor email to send reservation data. e.g. email@email.com.</md-error>
                   </md-input-container>
-
                 </div>
-                <h4>Friends</h4>
-                <td-chips class="pad-bottom-sm" [(ngModel)]="invitationModel" name="friends" placeholder="Enter invitation email"></td-chips>
+
+                <h4>Guests</h4>
+                <td-chips
+                  class="pad-bottom-sm"
+                  [(ngModel)]="invitationModel"
+                  name="invitedGuests"
+                  (add)="validateEmail()"
+                  placeholder="Enter invitation email">
+                </td-chips>
+                <md-checkbox #termsi>Accept terms</md-checkbox>
               </form>
-              <div style="text-align: right">
-                <button md-button (click)="showInviteDialog(invitationForm.form)" [disabled]="!invitationForm.form.valid" color="accent" class="text-upper">Invite friends</button>
+              <div class="align-right">
+                <button md-button (click)="showInviteDialog(invitationForm.form)" [disabled]="!(invitationForm.form.valid && invitationModel.length > 0 && termsi.checked)" color="accent" class="text-upper">Invite friends</button>
               </div>
             </div>
           </div>

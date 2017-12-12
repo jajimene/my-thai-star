@@ -1,15 +1,12 @@
-import { OrderList } from './orderList';
 import { Observable } from 'rxjs/Observable';
-import { BookingInfo } from './bookingInfo';
+import { ReservationView } from '../../viewModels/interfaces';
+import { BookingInfo, FilterCockpit } from '../backendModels/interfaces';
 
 export interface IBookingDataService {
 
-    getBookingId(): Observable<number>;
-    getOrders(): Observable<BookingInfo[]>;
-    getOrder(id: number): Observable<BookingInfo>;
-    getReservations(): Observable<BookingInfo[]>;
-    getReservation(id: number): Observable<BookingInfo>;
+    getReservations(filter: FilterCockpit): Observable<ReservationView[]>;
     bookTable(booking: BookingInfo): Observable<number>;
-    saveOrders(orders: OrderList): Observable<BookingInfo>;
-
+    acceptInvite(token: string): Observable<number>;
+    cancelInvite(token: string): Observable<number>;
+    cancelReserve(token: string): Observable<number>;
 }

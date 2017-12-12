@@ -25,13 +25,19 @@ public class BookingSearchCriteriaTo extends SearchCriteriaTo {
 
   private Timestamp creationDate;
 
+  private String email;
+
   private Boolean canceled;
 
   private BookingType bookingType;
 
   private Long tableId;
 
-  private String email;
+  private Long orderId;
+
+  private Integer assistants;
+
+  private Long userId;
 
   /**
    * The constructor.
@@ -101,7 +107,17 @@ public class BookingSearchCriteriaTo extends SearchCriteriaTo {
     this.creationDate = creationDate;
   }
 
-  public Boolean isCanceled() {
+  public String getEmail() {
+
+    return this.email;
+  }
+
+  public void setEmail(String email) {
+
+    this.email = email;
+  }
+
+  public Boolean getCanceled() {
 
     return this.canceled;
   }
@@ -116,9 +132,9 @@ public class BookingSearchCriteriaTo extends SearchCriteriaTo {
     return this.bookingType;
   }
 
-  public void setBookingType(BookingType bookingTypeId) {
+  public void setBookingType(BookingType bookingType) {
 
-    this.bookingType = this.bookingType;
+    this.bookingType = bookingType;
   }
 
   public Long getTableId() {
@@ -131,14 +147,34 @@ public class BookingSearchCriteriaTo extends SearchCriteriaTo {
     this.tableId = tableId;
   }
 
-  public String getEmail() {
+  public Long getOrderId() {
 
-    return this.email;
+    return orderId;
   }
 
-  public void setEmail(String email) {
+  public void setOrderId(Long orderId) {
 
-    this.email = email;
+    this.orderId = orderId;
+  }
+
+  public Integer getAssistants() {
+
+    return assistants;
+  }
+
+  public void setAssistants(Integer assistants) {
+
+    this.assistants = assistants;
+  }
+
+  public Long getUserId() {
+
+    return userId;
+  }
+
+  public void setUserId(Long userId) {
+
+    this.userId = userId;
   }
 
 }

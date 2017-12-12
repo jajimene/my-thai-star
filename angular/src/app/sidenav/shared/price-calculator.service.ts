@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 
-import { ExtraView, OrderView } from '../../shared/models/interfaces';
+import { ExtraView, OrderView } from '../../shared/viewModels/interfaces';
 import {reduce, chain} from 'lodash';
 
 @Injectable()
@@ -8,11 +8,10 @@ export class PriceCalculatorService {
 
   getPrice(order: OrderView): number {
     const extrasPrice: number = chain(order.extras)
-     .filter((extra: ExtraView) => extra.selected)
      .reduce((total: number, extra: ExtraView): number => total + extra.price, 0)
      .value();
 
-    return (order.price + extrasPrice) * order.amount;
+    return (order.dish.price + extrasPrice) * order.orderLine.amount;
   }
 
   getTotalPrice(orders: OrderView[]): number {

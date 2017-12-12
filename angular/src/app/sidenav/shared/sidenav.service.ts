@@ -1,22 +1,22 @@
-import { OrderList } from '../../shared/backend/booking/orderList';
 import { Observable } from 'rxjs/Observable';
-import { BookingDataService } from '../../shared/backend/booking/booking-data-service';
 import { Injectable } from '@angular/core';
-import { OrderView } from '../../shared/models/interfaces';
-import { MdSnackBar } from '@angular/material';
-import { find, isEqual, remove, cloneDeep } from 'lodash';
+import { OrderDataService } from '../../shared/backend/order/order-data-service';
+import { SnackBarService } from '../../shared/snackService/snackService.service';
+import { OrderView, ExtraView } from '../../shared/viewModels/interfaces';
+import { OrderListInfo, OrderInfo } from '../../shared/backend/backendModels/interfaces';
+import { find, filter, isEqual, remove, cloneDeep, toString } from 'lodash';
 
-const isOrderEqual: Function = (orderToFind: OrderView) => (o: OrderView) => o.name === orderToFind.name && isEqual(o.extras, orderToFind.extras);
+const isOrderEqual: Function =
+   (orderToFind: OrderView) => (o: OrderView) => o.dish.name === orderToFind.dish.name && isEqual(o.extras, orderToFind.extras);
 
 @Injectable()
 export class SidenavService {
 
   opened: boolean = false;
 
-  orders: OrderView[] = [
-  ];
+  orders: OrderView[] = [];
 
-  constructor(private snackBar: MdSnackBar, private bookingDataService: BookingDataService) {}
+  constructor(private orderDataService: OrderDataService) {}
 
   public openSideNav(): void {
     this.opened = true;
@@ -39,44 +39,58 @@ export class SidenavService {
   }
 
   public addOrder(order: OrderView): void {
-    if (this.findOrder(order)) {
-      this.increaseOrder(order);
+    let addOrder: OrderView = cloneDeep(order);
+    addOrder.extras = filter(addOrder.extras, (extra: ExtraView) => extra.selected);
+    if (this.findOrder(addOrder)) {
+      this.increaseOrder(addOrder);
     } else {
-      this.orders.push(cloneDeep(order));
+      this.orders.push(addOrder);
     }
   }
 
   public increaseOrder(order: OrderView): number {
-    return this.findOrder(order).amount += 1;
+    return this.findOrder(order).orderLine.amount += 1;
   }
 
   public decreaseOrder(order: OrderView): number {
-    return this.findOrder(order).amount -= 1;
+    return this.findOrder(order).orderLine.amount -= 1;
   }
 
   public removeOrder(order: OrderView): OrderView {
     return remove(this.orders, isOrderEqual(order));
   }
 
-  public sendOrders(id: number): void {
-    let orderList: OrderList = {
-      bookingId: id,
-      orders: cloneDeep(this.orders),
+  public removeAllOrders(): OrderView[] {
+    this.orders = [];
+    return this.orders;
+  }
+
+  public sendOrders(token: string): Observable<number> {
+
+    let orderList: OrderListInfo = {
+      booking: {bookingToken: token},
+      orderLines: this.composeOrders(this.orders),
     };
+
     this.closeSideNav();
-    this.bookingDataService.saveOrders(orderList)
-      .subscribe(() => {
-          this.orders = [];
-          this.snackBar.open('Order correctly noted', 'OK', {
-            duration: 4000,
-            extraClasses: ['bgc-green-600'],
-          });
-      },
-      (error: any) => {
-          this.snackBar.open('Booking ID not existing', 'OK', {
-            duration: 8000,
-            extraClasses: ['bgc-red-600'],
-          });
+    return this.orderDataService.saveOrders(orderList);
+  }
+
+   composeOrders(orders: OrderView[]): OrderInfo[] {
+      let composedOrders: OrderInfo[] = [];
+      orders.forEach( (order: OrderView) => {
+        let extras: any[] = [];
+        order.extras.filter( (extra: ExtraView) => extra.selected )
+                    .forEach( (extra: ExtraView) => extras.push({id: extra.id}));
+        composedOrders.push({
+          orderLine: {
+            dishId: order.dish.id,
+            amount: order.orderLine.amount,
+            comment: order.orderLine.comment,
+          },
+          extras: extras,
+        });
       });
+      return composedOrders;
    }
 }
