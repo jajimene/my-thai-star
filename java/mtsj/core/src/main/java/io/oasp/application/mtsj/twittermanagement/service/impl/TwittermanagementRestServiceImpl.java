@@ -4,14 +4,12 @@ import java.util.Map;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.ws.rs.core.HttpHeaders;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import io.oasp.application.mtsj.general.service.impl.config.MicroserviceConfig;
 import io.oasp.application.mtsj.twittermanagement.service.api.TwittermanagementRestService;
-import io.oasp.application.serviceAuth.auth.service.api.rest.JwtHeaderTo;
-import io.oasp.application.serviceAuth.auth.service.api.rest.LoginTo;
-import io.oasp.application.serviceAuth.auth.service.api.rest.SecuritymanagementRestService;
 import io.oasp.application.twitterService.twitter.service.api.rest.TwitterClient;
 import io.oasp.module.service.common.api.client.config.ServiceClientConfigBuilder;
 
@@ -28,32 +26,30 @@ public class TwittermanagementRestServiceImpl implements TwittermanagementRestSe
   private MicroserviceConfig config;
 
   @Override
-  public boolean sendTweetRemote() {
+  public boolean sendTweetRemote(HttpHeaders headers) {
 
     // TODO: Fallback, boolean for mock
     MicroserviceConfig msConfig = new MicroserviceConfig();
 
-    Map<String, String> headerMap =
-        new ServiceClientConfigBuilder().authJwt().userLogin("waiter").userPassword("waiter").buildMap();
-    headerMap.put("Content-Type", "application/json");
+    // Map<String, String> headerMap =
+    // new ServiceClientConfigBuilder().authJwt().userLogin("waiter").userPassword("waiter").buildMap();
+    // headerMap.put("Content-Type", "application/json");
+    //
+    // LoginTo loginTo = new LoginTo();
+    // loginTo.setJ_username("waiter");
+    // loginTo.setJ_password("waiter");
+    //
+    // SecuritymanagementRestService authService =
+    // this.config.getMicroserviceInterface(SecuritymanagementRestService.class, headerMap);
+    // // this.serviceClientFactory.create(SecuritymanagementRestService.class, headerMap);
+    // JwtHeaderTo authHeaders = authService.login(loginTo);
+    //
+    // headerMap.put("Authorization", authHeaders.getAccessToken());
 
-    LoginTo loginTo = new LoginTo();
-    loginTo.setJ_username("waiter");
-    loginTo.setJ_password("waiter");
-
-    SecuritymanagementRestService authService =
-        this.config.getMicroserviceInterface(SecuritymanagementRestService.class, headerMap);
-    // this.serviceClientFactory.create(SecuritymanagementRestService.class, headerMap);
-    JwtHeaderTo authHeaders = authService.login(loginTo);
-
-    Map<String, String> headerMap1 =
-        new ServiceClientConfigBuilder().authJwt().userLogin("waiter").userPassword("waiter").buildMap();
-    headerMap.put("Content-Type", "application/json");
-
-    headerMap.put("Authorization", authHeaders.getAccessToken());
+    Map<String, String> headerMap = new ServiceClientConfigBuilder().authJwt().buildMap();
+    headerMap.put("Authorization", headers.getHeaderString("Authorization"));
 
     TwitterClient twitterClient = this.config.getMicroserviceInterface(TwitterClient.class, headerMap);
-    // this.serviceClientFactory.create(TwitterClient.class, headerMap);// getTweeterClient();
     return twitterClient.sendTweet();
   }
 

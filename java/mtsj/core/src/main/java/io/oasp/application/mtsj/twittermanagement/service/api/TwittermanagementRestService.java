@@ -4,6 +4,8 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
 import io.oasp.application.mtsj.general.common.api.RestService;
@@ -19,7 +21,7 @@ public interface TwittermanagementRestService extends RestService {
 
   @POST
   @Path("/twitterRemote")
-  boolean sendTweetRemote();
+  boolean sendTweetRemote(@Context HttpHeaders headers);
 
   // @GET
   // @Path("/gettweet")
