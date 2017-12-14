@@ -35,8 +35,7 @@ public class TokenAuthenticationService {
 
   static final Integer EXPIRATION_HOURS = 1;
 
-  // static final String SECRET = "ThisIsASecret";
-  static final String SECRET = "VGhpc0lzQVNlY3JldA==";
+  static final String SECRET = "ThisIsASecret";
 
   static final String TOKEN_PREFIX = "Bearer";
 
@@ -112,9 +111,8 @@ public class TokenAuthenticationService {
     Map<String, Object> claims = new HashMap<>();
     claims.put(CLAIM_ISSUER, ISSUER);
     claims.put(CLAIM_SUBJECT, auth.getName());
-    // claims.put(CLAIM_SCOPE, auth.getAuthorities());
     claims.put(CLAIM_SCOPE, scopes);
-    claims.put("roles", scopes);
+    claims.put(CLAIM_ROLES, scopes);
     claims.put(CLAIM_CREATED, generateCreationDate() / 1000);
     claims.put(CLAIM_EXPIRATION, generateExpirationDate() / 1000);
     LOG.info(claims.toString());
@@ -166,17 +164,9 @@ public class TokenAuthenticationService {
 
   static List<String> getRolesFromToken(String token) {
 
-    // List<LinkedHashMap> scopes = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
-    // .getBody().get(CLAIM_SCOPE, List.class);
-    //
-    // List<String> roles = new ArrayList<>();
-    // for (LinkedHashMap<?, ?> scope : scopes) {
-    // roles.add(scope.get("authority").toString());
-    // }
-    List<String> roles = Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
+    return Jwts.parser().setSigningKey(SECRET).parseClaimsJws(token.replace(TOKEN_PREFIX, "")).getBody()
         .get(CLAIM_SCOPE, List.class);
 
-    return roles;
   }
 
 }
